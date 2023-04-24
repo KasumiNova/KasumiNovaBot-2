@@ -47,16 +47,16 @@ public class MainHandler extends AbstractHandler<MainHandler> implements UpdateT
         if (message.totalOnline != 0 && playerList.length != 0) {
             builder.append(MiraiCodes.WRAP).append("在线玩家：").append(MiraiCodes.WRAP);
 
-            int count = 1;
+            int counter = 1;
             for (int i = 0; i < playerList.length; i++) {
                 if (i == playerList.length - 1) {
                     builder.append(playerList[i]);
-                } else if (count <= 3) {
+                } else if (counter <= 3) {
                     builder.append(playerList[i]).append("、");
-                    count++;
+                    counter++;
                 } else {
-                    builder.append(playerList[i]).append(MiraiCodes.WRAP);
-                    count = 1;
+                    builder.append(playerList[i]).append("、").append(MiraiCodes.WRAP);
+                    counter = 1;
                 }
             }
         }
