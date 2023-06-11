@@ -39,6 +39,7 @@ public class ServerHelperCL {
     public ChannelFuture future = null;
     private EventLoopGroup work;
     private ChannelHandlerContext ctx = null;
+    private volatile long lastHeartbeat = System.currentTimeMillis();
 
     public ServerHelperCL(ServerHelperCLConfig.CLConfig config) {
         this.config = config;
@@ -52,6 +53,9 @@ public class ServerHelperCL {
         GetPlayersCmd getPlayersCmd = new GetPlayersCmd(this);
         ReconnectCmd reconnectCmd = new ReconnectCmd(this);
         ServerCommandExecCmd serverCommandExecCmd = new ServerCommandExecCmd(this);
+        GlobalCommandExecCmd globalCommandExecCmd = new GlobalCommandExecCmd(this);
+        PlayerCommandExecCmd playerCommandExecCmd = new PlayerCommandExecCmd(this);
+        KickMeCmd kickMeCmd = new KickMeCmd(this);
 
         groupPrivateCmds.put(whiteListAddCommand.commandName, whiteListAddCommand);
         groupPrivateCmds.put(whiteListForceAddCommand.commandName, whiteListForceAddCommand);
@@ -62,6 +66,9 @@ public class ServerHelperCL {
         groupPrivateCmds.put(getPlayersCmd.commandName, getPlayersCmd);
         groupPrivateCmds.put(reconnectCmd.commandName, reconnectCmd);
         groupPrivateCmds.put(serverCommandExecCmd.commandName, serverCommandExecCmd);
+        groupPrivateCmds.put(globalCommandExecCmd.commandName, globalCommandExecCmd);
+        groupPrivateCmds.put(playerCommandExecCmd.commandName, playerCommandExecCmd);
+        groupPrivateCmds.put(kickMeCmd.commandName, kickMeCmd);
     }
 
     public static void loadConsoleCommand() {
@@ -147,6 +154,14 @@ public class ServerHelperCL {
         } catch (Exception e) {
             KasumiNovaBot2.INSTANCE.logger.warning(e);
         }
+    }
+
+    public void updateHeartbeatTime() {
+        lastHeartbeat = System.currentTimeMillis();
+    }
+
+    public long getLastHeartbeat() {
+        return lastHeartbeat;
     }
 
     public ChannelHandlerContext getCtx() {

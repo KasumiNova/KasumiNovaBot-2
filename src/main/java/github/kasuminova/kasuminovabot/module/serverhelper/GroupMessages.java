@@ -12,8 +12,8 @@ import java.time.ZoneId;
 import java.util.List;
 
 public class GroupMessages {
-    public static final String WHITELIST_USERNAME_NOT_EXIST = "找不到此游戏 ID 对应的服务器白名单。";
-    public static final String WHITELIST_ID_NOT_EXIST = "找不到此 QQ 对应的服务器白名单。";
+    public static final String WHITELIST_ID_NOT_EXIST = "找不到此游戏 ID 对应的服务器白名单。";
+    public static final String WHITELIST_QQ_NOT_EXIST = "找不到此 QQ 对应的服务器白名单。";
 
     public static String whiteListAddSucceeded(FullWhiteListInfo fullWhiteListInfo) {
         return String.format("已成功在服务器添加白名单: %s (QQ: %s)。",
@@ -21,7 +21,7 @@ public class GroupMessages {
     }
 
     public static String whiteListRemoveSucceeded(FullWhiteListInfo fullWhiteListInfo) {
-        return String.format("已将目标信息 %s (QQ: %s) 移至回收站。",
+        return String.format("已成功将目标信息 %s (QQ: %s) 删除 / 移至回收站。",
                 fullWhiteListInfo.getUserName(), fullWhiteListInfo.getId());
     }
 

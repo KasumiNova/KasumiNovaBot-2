@@ -29,7 +29,7 @@ public final class KasumiNovaBot2 extends JavaPlugin {
     public final CommandListener commandListener = new CommandListener(registeredCommands, privateGroupCommands, globalGroupMessageListener);
 
     private KasumiNovaBot2() {
-        super(new JvmPluginDescriptionBuilder("github.kasuminova.kasuminovabot.KasumiNovaBot2", "2.0.0")
+        super(new JvmPluginDescriptionBuilder("github.kasuminova.kasuminovabot.KasumiNovaBot2", "2.2.0")
                 .name("KasumiNovaBot2")
                 .author("KasumiNova")
                 .build());

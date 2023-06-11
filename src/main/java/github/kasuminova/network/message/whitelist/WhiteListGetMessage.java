@@ -12,7 +12,7 @@ public class WhiteListGetMessage implements Serializable, SearchMethod {
     }
 
     public WhiteListGetMessage(String userName) {
-        this.searchMethod = SEARCH_USERNAME;
+        this.searchMethod = SEARCH_ID;
         this.key = userName;
     }
 }

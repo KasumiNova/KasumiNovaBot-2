@@ -7,8 +7,10 @@ import github.kasuminova.kasuminovabot.module.serverhelper.ServerMessageSyncThre
 import github.kasuminova.kasuminovabot.module.serverhelper.config.ServerHelperCLConfig;
 import github.kasuminova.kasuminovabot.util.MiraiCodes;
 import github.kasuminova.network.message.chatmessage.GameChatMessage;
+import github.kasuminova.network.message.playercmd.PlayerCmdExecFailedMessage;
 import github.kasuminova.network.message.protocol.ClientType;
 import github.kasuminova.network.message.protocol.ClientTypeMessage;
+import github.kasuminova.network.message.protocol.HeartbeatResponse;
 import github.kasuminova.network.message.protocol.PreDisconnectMessage;
 import github.kasuminova.network.message.servercmd.CmdExecFailedMessage;
 import github.kasuminova.network.message.servercmd.CmdExecResultsMessage;
@@ -95,10 +97,10 @@ public class MainHandler extends AbstractHandler<MainHandler> implements UpdateT
                 builder.append(GroupMessages.whiteListIDAlreadyExists(fullWhiteListInfo));
                 break;
             case USERNAME_NOT_EXIST:
-                builder.append(GroupMessages.WHITELIST_USERNAME_NOT_EXIST);
+                builder.append(GroupMessages.WHITELIST_ID_NOT_EXIST);
                 break;
             case ID_NOT_EXIST:
-                builder.append(GroupMessages.WHITELIST_ID_NOT_EXIST);
+                builder.append(GroupMessages.WHITELIST_QQ_NOT_EXIST);
                 break;
             default:
                 unExpected = true;
@@ -126,6 +128,10 @@ public class MainHandler extends AbstractHandler<MainHandler> implements UpdateT
         handler.cl.getChatMessageSyncTask().offerCmdExecResult(message.serverName, plainText);
     }
 
+    private static void offerExecResult(MainHandler handler, PlayerCmdExecFailedMessage message) {
+        handler.cl.getChatMessageSyncTask().offerCmdExecResult(message.playerName, Collections.singletonList(message.cause));
+    }
+
     private static void preDisconnect(MainHandler handler, PreDisconnectMessage message) {
         KasumiNovaBot2.INSTANCE.logger.warning("即将从中心服务器断开连接，原因：" + message.reason);
         handler.cl.disconnect();
@@ -141,7 +147,10 @@ public class MainHandler extends AbstractHandler<MainHandler> implements UpdateT
         registerMessage(CmdExecFailedMessage.class, MainHandler::offerExecResult);
         registerMessage(CmdExecResultsMessage.class, MainHandler::offerExecResult);
 
+        registerMessage(PlayerCmdExecFailedMessage.class, MainHandler::offerExecResult);
+
         registerMessage(PreDisconnectMessage.class, MainHandler::preDisconnect);
+        registerMessage(HeartbeatResponse.class, (handler, message) -> cl.updateHeartbeatTime());
     }
 
     @Override

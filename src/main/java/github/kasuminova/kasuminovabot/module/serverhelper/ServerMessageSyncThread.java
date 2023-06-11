@@ -115,12 +115,10 @@ public class ServerMessageSyncThread implements Runnable {
                 builder.append('[').append(server).append("]:").append(MiraiCodes.WRAP);
                 String message;
                 while ((message = queue.poll()) != null) {
-                    builder.append(message);
+                    builder.append(message).append(MiraiCodes.WRAP);
 
                     if (queue.isEmpty()) {
                         break;
-                    } else {
-                        builder.append(MiraiCodes.WRAP);
                     }
                 }
             });

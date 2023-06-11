@@ -19,7 +19,7 @@ public class WhiteListAddCmd extends GroupCommandCL {
                 1,
                 0,
                 new MessageChainBuilder()
-                        .append("介绍：申请服务器白名单。")
+                        .append("介绍：申请服务器白名单。").append(MiraiCodes.WRAP)
                         .append(String.format("例：%s申请白名单 PLAYER", KasumiNovaBot2.COMMAND_PREFIX))
                         .build(),
                 cl);

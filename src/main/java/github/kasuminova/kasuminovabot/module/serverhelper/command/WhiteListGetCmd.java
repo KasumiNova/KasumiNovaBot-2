@@ -18,7 +18,7 @@ public class WhiteListGetCmd extends GroupCommandCL implements SearchMethod {
                 2,
                 0,
                 new MessageChainBuilder()
-                        .append(String.format("用法：%s查询白名单 <QQ|USERNAME> <群聊 QQ|游戏名>", KasumiNovaBot2.COMMAND_PREFIX))
+                        .append(String.format("用法：%s查询白名单 <QQ|ID> <群聊 QQ|游戏名>", KasumiNovaBot2.COMMAND_PREFIX))
                         .build(),
                 cl);
     }
@@ -27,7 +27,7 @@ public class WhiteListGetCmd extends GroupCommandCL implements SearchMethod {
     public void execute(GroupMessageEvent event, List<String> args) {
         String searchMethod = args.get(0);
         switch (SearchMethod.getIntWithString(searchMethod)) {
-            case SEARCH_USERNAME: {
+            case SEARCH_ID: {
                 cl.sendMessageToServer(new WhiteListGetMessage(args.get(1)), true);
                 break;
             }
@@ -48,7 +48,7 @@ public class WhiteListGetCmd extends GroupCommandCL implements SearchMethod {
                 MiscUtil.sendMessageToGroup(new MessageChainBuilder()
                                 .append(new QuoteReply(event.getMessage()))
                                 .append("非法参数 ").append(searchMethod).append(MiraiCodes.WRAP)
-                                .append("应为 `QQ` 或 `USERNAME`").build(),
+                                .append("应为 `QQ` 或 `ID`").build(),
                         event.getGroup());
             }
         }

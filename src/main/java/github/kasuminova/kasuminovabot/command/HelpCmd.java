@@ -31,7 +31,7 @@ public class HelpCmd extends GroupCommand {
         Collection<GroupCommand> globalCommands = KasumiNovaBot2.INSTANCE.getRegisteredCommands().values();
         for (GroupCommand cmd : globalCommands) {
             if (!(cmd.permission > event.getSender().getPermission().getLevel())) {
-                builder.append(KasumiNovaBot2.COMMAND_PREFIX).append(cmd.commandName)
+                builder.append(KasumiNovaBot2.COMMAND_PREFIX).append(cmd.commandName).append(MiraiCodes.WRAP)
                         .append(cmd.description).append(MiraiCodes.WRAP);
             }
         }
@@ -41,7 +41,7 @@ public class HelpCmd extends GroupCommand {
             builder.append("本群聊额外可使用的指令：").append(MiraiCodes.WRAP);
             for (GroupCommand cmd : privateGroupCmds.values()) {
                 if (!(cmd.permission > event.getSender().getPermission().getLevel())) {
-                    builder.append(KasumiNovaBot2.COMMAND_PREFIX).append(cmd.commandName)
+                    builder.append(KasumiNovaBot2.COMMAND_PREFIX).append(cmd.commandName).append(MiraiCodes.WRAP)
                             .append(cmd.description).append(MiraiCodes.WRAP);
                 }
             }

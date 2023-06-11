@@ -18,7 +18,7 @@ public class WhiteListUpdateMessage implements Serializable, SearchMethod {
     }
 
     public WhiteListUpdateMessage(String oldName, String newName) {
-        this.searchMethod = SEARCH_USERNAME;
+        this.searchMethod = SEARCH_ID;
         this.oldId = -1;
         this.newId = -1;
         this.oldName = oldName;

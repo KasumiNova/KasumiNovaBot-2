@@ -18,7 +18,7 @@ public class WhiteListUpdateCmd extends GroupCommandCL implements SearchMethod {
                 3,
                 1,
                 new MessageChainBuilder()
-                        .append(String.format("用法：%s修改白名单 <QQ|USERNAME> <用户 QQ|旧游戏名> <用户 QQ|新游戏名>", KasumiNovaBot2.COMMAND_PREFIX))
+                        .append(String.format("用法：%s修改白名单 <QQ|ID> <用户 QQ|旧游戏名> <用户 QQ|新游戏名>", KasumiNovaBot2.COMMAND_PREFIX))
                         .build(),
                 cl);
     }
@@ -30,7 +30,7 @@ public class WhiteListUpdateCmd extends GroupCommandCL implements SearchMethod {
         String newInfo = args.get(2);
 
         switch (SearchMethod.getIntWithString(searchMethod)) {
-            case SEARCH_USERNAME: {
+            case SEARCH_ID: {
                 cl.sendMessageToServer(new WhiteListUpdateMessage(oldInfo, newInfo), true);
                 break;
             }
@@ -57,7 +57,7 @@ public class WhiteListUpdateCmd extends GroupCommandCL implements SearchMethod {
             default: MiscUtil.sendMessageToGroup(new MessageChainBuilder()
                             .append(new QuoteReply(event.getMessage()))
                             .append("非法参数 ").append(searchMethod).append(MiraiCodes.WRAP)
-                            .append("应为 `QQ` 或 `USERNAME`").build(),
+                            .append("应为 `QQ` 或 `ID`").build(),
                     event.getGroup());
         }
     }

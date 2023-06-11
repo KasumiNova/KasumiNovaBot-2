@@ -14,7 +14,7 @@ public class WhiteListRemoveMessage implements Serializable, SearchMethod {
     }
 
     public WhiteListRemoveMessage(String userName, boolean removeRecycleBin) {
-        this.searchMethod = SEARCH_USERNAME;
+        this.searchMethod = SEARCH_ID;
         this.key = userName;
         this.removeRecycleBin = removeRecycleBin;
     }

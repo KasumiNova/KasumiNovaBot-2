@@ -18,7 +18,7 @@ public class WhiteListRemoveCmd extends GroupCommandCL implements SearchMethod {
                 3,
                 1,
                 new MessageChainBuilder()
-                        .append(String.format("用法：%s删除白名单 <QQ|USERNAME> <用户 QQ|游戏名> <1|0> (目标是否为回收站，1 为是，0 为否)", KasumiNovaBot2.COMMAND_PREFIX))
+                        .append(String.format("用法：%s删除白名单 <QQ|ID> <用户 QQ|游戏名> <1|0> (目标是否为回收站，1 为是，0 为否)", KasumiNovaBot2.COMMAND_PREFIX))
                         .build(),
                 cl);
     }
@@ -56,7 +56,7 @@ public class WhiteListRemoveCmd extends GroupCommandCL implements SearchMethod {
         }
 
         switch (SearchMethod.getIntWithString(searchMethod)) {
-            case SEARCH_USERNAME: {
+            case SEARCH_ID: {
                 cl.sendMessageToServer(new WhiteListRemoveMessage(userNameOrId, deleteForever), true);
                 break;
             }
@@ -75,7 +75,7 @@ public class WhiteListRemoveCmd extends GroupCommandCL implements SearchMethod {
             default: MiscUtil.sendMessageToGroup(new MessageChainBuilder()
                             .append(new QuoteReply(event.getMessage()))
                             .append("非法参数 ").append(searchMethod).append(MiraiCodes.WRAP)
-                            .append("应为 `QQ` 或 `USERNAME`").build(),
+                            .append("应为 `QQ` 或 `ID`").build(),
                     event.getGroup());
         }
     }
