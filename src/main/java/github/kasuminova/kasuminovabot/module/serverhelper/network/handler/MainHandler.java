@@ -5,6 +5,8 @@ import github.kasuminova.kasuminovabot.module.serverhelper.GroupMessages;
 import github.kasuminova.kasuminovabot.module.serverhelper.ServerHelperCL;
 import github.kasuminova.kasuminovabot.module.serverhelper.ServerMessageSyncThread;
 import github.kasuminova.kasuminovabot.module.serverhelper.config.ServerHelperCLConfig;
+import github.kasuminova.kasuminovabot.module.tips.CustomTip;
+import github.kasuminova.kasuminovabot.module.tips.TipManager;
 import github.kasuminova.kasuminovabot.util.MiraiCodes;
 import github.kasuminova.network.message.chatmessage.GameChatMessage;
 import github.kasuminova.network.message.playercmd.PlayerCmdExecFailedMessage;
@@ -24,6 +26,7 @@ import net.mamoe.mirai.message.data.MessageChainBuilder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class MainHandler extends AbstractHandler<MainHandler> implements UpdateType, ResultCode {
     final ServerHelperCL cl;
@@ -37,6 +40,7 @@ public class MainHandler extends AbstractHandler<MainHandler> implements UpdateT
     private static void sendGameChatMessage(MainHandler handler, GameChatMessage message) {
         ServerMessageSyncThread syncTask = handler.cl.getChatMessageSyncTask();
         if (syncTask.canSendChatMessage()) {
+            KasumiNovaBot2.INSTANCE.logger.info("接收到聊天信息：" + message.userName + "：" + message.message);
             syncTask.messageQueue.offer(message);
         }
     }
@@ -50,15 +54,44 @@ public class MainHandler extends AbstractHandler<MainHandler> implements UpdateT
             builder.append(MiraiCodes.WRAP).append("在线玩家：").append(MiraiCodes.WRAP);
 
             int counter = 1;
-            for (int i = 0; i < playerList.length; i++) {
+            for (int i = 0; i < Math.min(playerList.length, 40); i++) {
                 if (i == playerList.length - 1) {
                     builder.append(playerList[i]);
                 } else if (counter <= 3) {
                     builder.append(playerList[i]).append("、");
                     counter++;
                 } else {
-                    builder.append(playerList[i]).append("、").append(MiraiCodes.WRAP);
+                    builder.append(playerList[i]).append(MiraiCodes.WRAP);
                     counter = 1;
+                }
+            }
+            if (playerList.length > 40) {
+                builder.append(MiraiCodes.WRAP)
+                        .append("还有 ").append(String.valueOf(playerList.length - 40)).append(" 位玩家未展示...");
+            }
+        }
+
+        ThreadLocalRandom rd = ThreadLocalRandom.current();
+        if (rd.nextFloat() >= 0.75F) {
+            CustomTip customTip = TipManager.randomTip();
+            if (customTip != null) {
+                builder.append(MiraiCodes.WRAP).append(customTip.getTip()).append(" —— ").append(customTip.getWho())
+                        .append("(ID: ").append(String.valueOf(customTip.getId())).append(")");
+                if (rd.nextFloat() >= 0.75F) {
+                    switch (rd.nextInt(3)) {
+                        case 0: {
+                            builder.append(MiraiCodes.WRAP).append("想要留下自己的随机提示，请使用《#投稿随机提示》~！");
+                            break;
+                        }
+                        case 1: {
+                            builder.append(MiraiCodes.WRAP).append("你说得对，但是《#投稿随机提示》可以在这里留下你的提示！");
+                            break;
+                        }
+                        case 2: {
+                            builder.append(MiraiCodes.WRAP).append("《#投稿随机提示》是好东西。");
+                            break;
+                        }
+                    }
                 }
             }
         }
@@ -134,7 +167,7 @@ public class MainHandler extends AbstractHandler<MainHandler> implements UpdateT
 
     private static void preDisconnect(MainHandler handler, PreDisconnectMessage message) {
         KasumiNovaBot2.INSTANCE.logger.warning("即将从中心服务器断开连接，原因：" + message.reason);
-        handler.cl.disconnect();
+//        handler.cl.disconnect();
     }
 
     @Override

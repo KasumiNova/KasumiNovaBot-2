@@ -9,6 +9,7 @@ import net.mamoe.mirai.message.data.MessageChainBuilder;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class HelpCmd extends GroupCommand {
     public static final HelpCmd INSTANCE = new HelpCmd();
@@ -31,18 +32,16 @@ public class HelpCmd extends GroupCommand {
         Collection<GroupCommand> globalCommands = KasumiNovaBot2.INSTANCE.getRegisteredCommands().values();
         for (GroupCommand cmd : globalCommands) {
             if (!(cmd.permission > event.getSender().getPermission().getLevel())) {
-                builder.append(KasumiNovaBot2.COMMAND_PREFIX).append(cmd.commandName).append(MiraiCodes.WRAP)
-                        .append(cmd.description).append(MiraiCodes.WRAP);
+                builder.append(KasumiNovaBot2.COMMAND_PREFIX).append(cmd.commandName).append(MiraiCodes.WRAP);
             }
         }
 
-        HashMap<String, GroupCommand> privateGroupCmds = KasumiNovaBot2.INSTANCE.getPrivateGroupCommands().get(String.valueOf(event.getGroup().getId()));
+        Map<String, GroupCommand> privateGroupCmds = KasumiNovaBot2.INSTANCE.getPrivateGroupCommands().get(String.valueOf(event.getGroup().getId()));
         if (privateGroupCmds != null) {
-            builder.append("本群聊额外可使用的指令：").append(MiraiCodes.WRAP);
+            builder.append("本群额外可使用的指令：").append(MiraiCodes.WRAP);
             for (GroupCommand cmd : privateGroupCmds.values()) {
                 if (!(cmd.permission > event.getSender().getPermission().getLevel())) {
-                    builder.append(KasumiNovaBot2.COMMAND_PREFIX).append(cmd.commandName).append(MiraiCodes.WRAP)
-                            .append(cmd.description).append(MiraiCodes.WRAP);
+                    builder.append(KasumiNovaBot2.COMMAND_PREFIX).append(cmd.commandName).append(MiraiCodes.WRAP);
                 }
             }
         }

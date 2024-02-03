@@ -31,6 +31,9 @@ object ServerHelperCLConfig : AutoSavePluginConfig("ServerHelperClient") {
 
         @Comment("群服聊天互通的结束时间，23:59:59 为全天。")
         var chatSyncEndTime: String = "23:59:59",
+
+        @Comment("新星工程：核心模组的 HyperNet 体系研究描述文件名。")
+        var researchDataFileName: String = "hypernet_research_data.json"
     )
 
     val clients: MutableList<CLConfig> by value(
@@ -42,7 +45,8 @@ object ServerHelperCLConfig : AutoSavePluginConfig("ServerHelperClient") {
                 port = 20000,
                 accessToken = "abc123",
                 chatSyncStartTime = "00:00:00",
-                chatSyncEndTime = "00:00:00"
+                chatSyncEndTime = "00:00:00",
+                researchDataFileName = "hypernet_research_data.json"
             )
         )
     )

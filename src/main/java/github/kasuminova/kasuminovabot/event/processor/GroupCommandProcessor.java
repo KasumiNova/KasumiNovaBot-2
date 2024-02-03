@@ -1,11 +1,9 @@
-package github.kasuminova.kasuminovabot.handler.sublistener;
+package github.kasuminova.kasuminovabot.event.processor;
 
 import github.kasuminova.kasuminovabot.KasumiNovaBot2;
 import github.kasuminova.kasuminovabot.command.Commands;
 import github.kasuminova.kasuminovabot.command.GroupCommand;
-import github.kasuminova.kasuminovabot.handler.AbstractSubListener;
-import github.kasuminova.kasuminovabot.handler.globallistener.GlobalGroupMessageListener;
-import github.kasuminova.kasuminovabot.handler.globallistener.GroupMsgEventProcessor;
+import github.kasuminova.kasuminovabot.event.listener.GroupMessageListener;
 import github.kasuminova.kasuminovabot.util.MiraiCodes;
 import github.kasuminova.kasuminovabot.util.MiscUtil;
 import github.kasuminova.kasuminovabot.util.UserUtil;
@@ -18,22 +16,23 @@ import net.mamoe.mirai.message.data.QuoteReply;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
-public class CommandListener extends AbstractSubListener {
-    private final HashMap<String, GroupCommand> registeredGlobalCommands;
-    private final HashMap<String, HashMap<String, GroupCommand>> groupPrivateCommands;
+public class GroupCommandProcessor extends GroupMessageEventProcessor {
+    private final Map<String, GroupCommand> registeredGlobalCommands;
+    private final Map<String, Map<String, GroupCommand>> groupPrivateCommands;
 
-    public CommandListener(
-            HashMap<String, GroupCommand> registeredGlobalCommands,
-            HashMap<String, HashMap<String, GroupCommand>> groupPrivateCommands,
-            GlobalGroupMessageListener globalGroupMessageListener
+    public GroupCommandProcessor(
+            Map<String, GroupCommand> registeredGlobalCommands,
+            Map<String, Map<String, GroupCommand>> groupPrivateCommands,
+            GroupMessageListener messageListener
     ) {
-        super(globalGroupMessageListener);
+        super(messageListener);
         this.registeredGlobalCommands = registeredGlobalCommands;
         this.groupPrivateCommands = groupPrivateCommands;
     }
 
-    public static boolean processCommand(GroupMessageEvent event, HashMap<String, GroupCommand> commands) {
+    public static boolean processCommand(GroupMessageEvent event, Map<String, GroupCommand> commands) {
         String msg = event.getMessage().serializeToMiraiCode();
 
         String commandStr = Commands.getCommand(msg);
@@ -79,14 +78,14 @@ public class CommandListener extends AbstractSubListener {
     }
 
     @Override
-    public GroupMsgEventProcessor getMessageProcessor() {
+    public EventProcessor<GroupMessageEvent> getMessageProcessor() {
         return event -> {
             String msg = event.getMessage().serializeToMiraiCode();
             if (!Commands.isCommand(msg)) return false;
 
             long groupId = event.getGroup().getId();
 
-            HashMap<String, GroupCommand> groupPrivateCommand = groupPrivateCommands.get(String.valueOf(groupId));
+            Map<String, GroupCommand> groupPrivateCommand = groupPrivateCommands.get(String.valueOf(groupId));
             if (groupPrivateCommand != null) {
                 if (processCommand(event, groupPrivateCommand)) {
                     return true;

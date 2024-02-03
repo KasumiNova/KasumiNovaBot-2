@@ -3,6 +3,7 @@ package github.kasuminova.kasuminovabot.util;
 import github.kasuminova.kasuminovabot.KasumiNovaBot2;
 import net.mamoe.mirai.Bot;
 import net.mamoe.mirai.contact.Group;
+import net.mamoe.mirai.contact.NormalMember;
 import net.mamoe.mirai.message.data.MessageChain;
 
 import java.time.LocalDate;
@@ -108,7 +109,8 @@ public class MiscUtil {
     }
 
     public static void sendMessageToGroup(MessageChain message, Group group) {
-        if (group.getBotAsMember().isMuted() || group.getSettings().isMuteAll()) {
+        NormalMember bot = group.getBotAsMember();
+        if (bot.isMuted() || (group.getSettings().isMuteAll() && bot.getPermission().getLevel() < 1)) {
             return;
         }
 
@@ -122,7 +124,7 @@ public class MiscUtil {
      * @return 当全为数字时返回 true，否则返回 false
      */
     public static boolean isNum(String str) {
-        return str.matches("[0-9]+");
+        return str.matches("-?[0-9]+");
     }
 
     /**

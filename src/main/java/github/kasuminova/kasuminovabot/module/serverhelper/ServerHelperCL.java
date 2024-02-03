@@ -6,8 +6,10 @@ import github.kasuminova.kasuminovabot.module.serverhelper.command.*;
 import github.kasuminova.kasuminovabot.module.serverhelper.command.console.ReconnectCLCmd;
 import github.kasuminova.kasuminovabot.module.serverhelper.command.console.ReloadCLCmd;
 import github.kasuminova.kasuminovabot.module.serverhelper.config.ServerHelperCLConfig;
-import github.kasuminova.kasuminovabot.module.serverhelper.group.handler.GroupMessageListener;
+import github.kasuminova.kasuminovabot.module.serverhelper.event.GroupMessageProcessor;
+import github.kasuminova.kasuminovabot.module.serverhelper.hypernet.StoredResearchData;
 import github.kasuminova.kasuminovabot.module.serverhelper.network.ClientInitializer;
+import github.kasuminova.kasuminovabot.util.FileUtil;
 import github.kasuminova.kasuminovabot.util.MiraiCodes;
 import github.kasuminova.kasuminovabot.util.MiscUtil;
 import io.netty.bootstrap.Bootstrap;
@@ -25,17 +27,25 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+@SuppressWarnings("unused")
 public class ServerHelperCL {
     public static final ExecutorService EXECUTOR = Executors.newFixedThreadPool(Math.max(Runtime.getRuntime().availableProcessors() / 4, 2));
     public static final List<ServerHelperCL> CL_LIST = new ArrayList<>();
     private final ServerHelperCLConfig.CLConfig config;
+
     private final ServerMessageSyncThread chatMessageSyncTask = new ServerMessageSyncThread(this);
     private final ConnectionDaemonThread connectionDaemonThread = new ConnectionDaemonThread(this);
-    private final GroupMessageListener groupMessageListener = new GroupMessageListener(this, KasumiNovaBot2.INSTANCE.globalGroupMessageListener);
-    private final HashMap<String, GroupCommand> groupPrivateCmds = new HashMap<>();
+
+    private final GroupMessageProcessor groupMessageListener = new GroupMessageProcessor(this, KasumiNovaBot2.INSTANCE.genericEventListener);
+
+    private final Map<String, GroupCommand> groupPrivateCmds = new HashMap<>();
+
+    private StoredResearchData storedResearchData = new StoredResearchData();
+
     public ChannelFuture future = null;
     private EventLoopGroup work;
     private ChannelHandlerContext ctx = null;
@@ -56,6 +66,7 @@ public class ServerHelperCL {
         GlobalCommandExecCmd globalCommandExecCmd = new GlobalCommandExecCmd(this);
         PlayerCommandExecCmd playerCommandExecCmd = new PlayerCommandExecCmd(this);
         KickMeCmd kickMeCmd = new KickMeCmd(this);
+        RandomResearchDataCmd randomResearchDataCmd = new RandomResearchDataCmd(this);
 
         groupPrivateCmds.put(whiteListAddCommand.commandName, whiteListAddCommand);
         groupPrivateCmds.put(whiteListForceAddCommand.commandName, whiteListForceAddCommand);
@@ -69,6 +80,7 @@ public class ServerHelperCL {
         groupPrivateCmds.put(globalCommandExecCmd.commandName, globalCommandExecCmd);
         groupPrivateCmds.put(playerCommandExecCmd.commandName, playerCommandExecCmd);
         groupPrivateCmds.put(kickMeCmd.commandName, kickMeCmd);
+        groupPrivateCmds.put(randomResearchDataCmd.commandName, randomResearchDataCmd);
     }
 
     public static void loadConsoleCommand() {
@@ -113,6 +125,8 @@ public class ServerHelperCL {
         chatMessageSyncTask.load();
         chatMessageSyncTask.start();
         groupMessageListener.load();
+
+        loadHyperNetIntegration();
     }
 
     public void unLoad() {
@@ -125,7 +139,9 @@ public class ServerHelperCL {
 
     public void connect() throws Exception {
         if (work != null && future != null) disconnect();
-
+        if (work != null) {
+            work.shutdownGracefully();
+        }
         work = new NioEventLoopGroup();
 
         Bootstrap bootstrap = new Bootstrap();
@@ -147,12 +163,24 @@ public class ServerHelperCL {
             work.shutdownGracefully();
 
             if (future != null) {
-                future.channel().closeFuture().sync();
+                future.channel().closeFuture();
                 future = null;
             }
             work = null;
         } catch (Exception e) {
             KasumiNovaBot2.INSTANCE.logger.warning(e);
+        }
+    }
+
+    public void loadHyperNetIntegration() {
+        String fileName = config.getResearchDataFileName();
+
+        try {
+            String jsonStr = FileUtil.readStringFromFile(KasumiNovaBot2.INSTANCE.resolveDataFile(fileName));
+            storedResearchData = StoredResearchData.Companion.parseFromJSONString(jsonStr);
+            KasumiNovaBot2.INSTANCE.logger.info("加载 HyperNet 研究数据文件成功！");
+        } catch (Exception e) {
+            KasumiNovaBot2.INSTANCE.logger.warning("加载 HyperNet 研究数据文件失败！", e);
         }
     }
 
@@ -162,6 +190,14 @@ public class ServerHelperCL {
 
     public long getLastHeartbeat() {
         return lastHeartbeat;
+    }
+
+    public StoredResearchData getStoredResearchData() {
+        return storedResearchData;
+    }
+
+    public void setStoredResearchData(final StoredResearchData storedResearchData) {
+        this.storedResearchData = storedResearchData;
     }
 
     public ChannelHandlerContext getCtx() {

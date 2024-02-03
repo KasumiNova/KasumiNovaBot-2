@@ -32,7 +32,7 @@ public class WhiteListAddCmd extends GroupCommandCL {
         if (!MiscUtil.isValidUserName(playerName)) {
             MiscUtil.sendMessageToGroup(new MessageChainBuilder()
                     .append(new QuoteReply(event.getMessage()))
-                    .append("非法用户名，ID 只能由字母、数字和下划线组成，且长度至少为 3 个字符，最多为 16 个字符。").build(),
+                    .append("非法用户名，ID 只能由字母、数字和下划线组成，不能为纯数字，且长度至少为 3 个字符，最多为 16 个字符。").build(),
                     event.getGroup());
             return;
         }
