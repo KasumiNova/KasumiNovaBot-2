@@ -1,12 +1,15 @@
 package github.kasuminova.kasuminovabot.module.serverhelper.network.handler;
 
 import github.kasuminova.kasuminovabot.KasumiNovaBot2;
+import github.kasuminova.kasuminovabot.data.BotData;
 import github.kasuminova.kasuminovabot.module.serverhelper.GroupMessages;
 import github.kasuminova.kasuminovabot.module.serverhelper.ServerHelperCL;
 import github.kasuminova.kasuminovabot.module.serverhelper.ServerMessageSyncThread;
 import github.kasuminova.kasuminovabot.module.serverhelper.config.ServerHelperCLConfig;
 import github.kasuminova.kasuminovabot.module.tips.CustomTip;
 import github.kasuminova.kasuminovabot.module.tips.TipManager;
+import github.kasuminova.kasuminovabot.util.ChatFilter;
+import github.kasuminova.kasuminovabot.util.FilteredStr;
 import github.kasuminova.kasuminovabot.util.MiraiCodes;
 import github.kasuminova.network.message.chatmessage.GameChatMessage;
 import github.kasuminova.network.message.playercmd.PlayerCmdExecFailedMessage;
@@ -39,7 +42,15 @@ public class MainHandler extends AbstractHandler<MainHandler> implements UpdateT
 
     private static void sendGameChatMessage(MainHandler handler, GameChatMessage message) {
         ServerMessageSyncThread syncTask = handler.cl.getChatMessageSyncTask();
-        if (syncTask.canSendChatMessage()) {
+        if (!syncTask.canSendChatMessage()) {
+            return;
+        }
+        BotData.Data botData = BotData.INSTANCE.getBotData(handler.cl.getConfig().getBotId());
+        FilteredStr filtered = ChatFilter.filterChat(message.message, botData.getInappropriateWordsCN(), botData.getInappropriateWordsEN());
+        if (filtered.isFiltered()) {
+            KasumiNovaBot2.INSTANCE.logger.warning("接收到敏感词匹配的聊天信息：" + message.userName + "：" + message.message);
+            KasumiNovaBot2.INSTANCE.logger.warning("匹配词汇：" + filtered.filteredString());
+        } else {
             KasumiNovaBot2.INSTANCE.logger.info("接收到聊天信息：" + message.userName + "：" + message.message);
             syncTask.messageQueue.offer(message);
         }
@@ -77,7 +88,7 @@ public class MainHandler extends AbstractHandler<MainHandler> implements UpdateT
             if (customTip != null) {
                 builder.append(MiraiCodes.WRAP).append(customTip.getTip()).append(" —— ").append(customTip.getWho())
                         .append("(ID: ").append(String.valueOf(customTip.getId())).append(")");
-                if (rd.nextFloat() >= 0.75F) {
+                if (rd.nextFloat() >= 0.25F) {
                     switch (rd.nextInt(3)) {
                         case 0: {
                             builder.append(MiraiCodes.WRAP).append("想要留下自己的随机提示，请使用《#投稿随机提示》~！");

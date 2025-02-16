@@ -33,7 +33,7 @@ object ServerHelperCLConfig : AutoSavePluginConfig("ServerHelperClient") {
         var chatSyncEndTime: String = "23:59:59",
 
         @Comment("新星工程：核心模组的 HyperNet 体系研究描述文件名。")
-        var researchDataFileName: String = "hypernet_research_data.json"
+        var researchDataFileName: String = "hypernet_research_data.json",
     )
 
     val clients: MutableList<CLConfig> by value(

@@ -34,7 +34,7 @@ public class RandomHitokotoCmd extends GroupCommand {
     @Override
     public void execute(final GroupMessageEvent event, final List<String> args) {
         long current = System.currentTimeMillis();
-        if (lastExecuted + (10 * 1000) > current) {
+        if (lastExecuted + (15 * 1000) > current) {
             return;
         }
 
@@ -64,7 +64,7 @@ public class RandomHitokotoCmd extends GroupCommand {
         MiscUtil.sendMessageToGroup(new MessageChainBuilder()
                 .append(new QuoteReply(event.getMessage()))
                 .append(randomTip.getTip()).append(" —— ").append(who)
-                .append("(ID: ").append(String.valueOf(randomTip.getId())).append(" )")
+                .append("(ID: ").append(String.valueOf(randomTip.getId())).append(")")
                 .build(), event.getGroup());
     }
 

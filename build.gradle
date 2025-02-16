@@ -7,7 +7,7 @@ plugins {
 }
 
 group 'github.kasuminova'
-version '2.4.0'
+version '2.4.4'
 
 repositories {
     maven {
@@ -34,5 +34,10 @@ jar {
 }
 
 tasks.withType(JavaCompile).configureEach {
+    sourceCompatibility = "17"
+    options.release = 17
     options.encoding = "UTF-8"
+    javaCompiler = javaToolchains.compilerFor {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
 }

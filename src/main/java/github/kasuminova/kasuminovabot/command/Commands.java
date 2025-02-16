@@ -31,25 +31,23 @@ public class Commands {
 
         ArrayList<String> args = new ArrayList<>(argLength);
 
-        for (int i = 0; i < split.length; i++) {
-            if (i > 0) {
-                if (i >= argLength) {
-                    StringBuilder lastArg = new StringBuilder();
+        for (int i = 1; i < split.length; i++) {
+            if (i >= argLength) {
+                StringBuilder lastArg = new StringBuilder();
 
-                    for (int i1 = argLength; i1 < split.length; i1++) {
-                        lastArg.append(split[i1]);
+                for (int i1 = argLength; i1 < split.length; i1++) {
+                    lastArg.append(split[i1]);
 
-                        if (!(i1 + 1 == split.length)) {
-                            lastArg.append(' ');
-                        }
+                    if (i1 + 1 != split.length) {
+                        lastArg.append(' ');
                     }
+                }
 
-                    args.add(lastArg.toString());
-                    break;
-                } else {
-                    if (!split[i].isEmpty()) {
-                        args.add(split[i]);
-                    }
+                args.add(lastArg.toString());
+                break;
+            } else {
+                if (!split[i].isEmpty()) {
+                    args.add(split[i]);
                 }
             }
         }

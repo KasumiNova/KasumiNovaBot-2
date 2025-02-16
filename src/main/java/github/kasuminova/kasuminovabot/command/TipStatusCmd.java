@@ -7,7 +7,10 @@ import github.kasuminova.kasuminovabot.util.MiscUtil;
 import net.mamoe.mirai.event.events.GroupMessageEvent;
 import net.mamoe.mirai.message.data.MessageChainBuilder;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class TipStatusCmd extends GroupCommand {
 
@@ -28,7 +31,7 @@ public class TipStatusCmd extends GroupCommand {
     public void execute(final GroupMessageEvent event, final List<String> args) {
         List<CustomTip> indexedTips = TipManager.getIndexedTips();
         Map<Long, String> userNick = new HashMap<>();
-        Map<Long, Integer> userTipCounter = new TreeMap<>(Comparator.reverseOrder());
+        Map<Long, Integer> userTipCounter = new HashMap<>();
         for (final CustomTip indexedTip : indexedTips) {
             userTipCounter.compute(indexedTip.getSubmitter(), (_k, v) -> {
                 if (v == null) {
@@ -43,19 +46,18 @@ public class TipStatusCmd extends GroupCommand {
                 .append("当前总共有 ").append(String.valueOf(indexedTips.size())).append(" 条已审核的随机提示。")
                 .append(MiraiCodes.WRAP).append("提交排行榜：");
 
-        int count = 0;
-        for (final Map.Entry<Long, Integer> entry : userTipCounter.entrySet()) {
-            if (count > 5) {
-                break;
-            }
-
-            msgBuilder.append(MiraiCodes.WRAP)
-                    .append(userNick.get(entry.getKey()))
-                    .append(" (").append(String.valueOf(entry.getKey())).append(")")
-                    .append("：").append(String.valueOf(entry.getValue())).append(" 条");
-            count++;
-        }
-
+        final int[] current = {0};
+        userTipCounter.entrySet().stream()
+                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+                .limit(10)
+                .forEach(entry -> {
+                    current[0]++;
+                    msgBuilder.append(MiraiCodes.WRAP)
+                            .append(String.valueOf(current[0])).append(".")
+                            .append(userNick.get(entry.getKey()))
+                            .append(" (").append(String.valueOf(entry.getKey())).append(")")
+                            .append("：").append(String.valueOf(entry.getValue())).append(" 条");
+                });
         MiscUtil.sendMessageToGroup(msgBuilder.build(), event.getGroup());
     }
 }

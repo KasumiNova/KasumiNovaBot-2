@@ -59,6 +59,7 @@ public class ServerHelperCL {
         WhiteListGetCmd whiteListGetCommand = new WhiteListGetCmd(this);
         WhiteListRemoveCmd whiteListRemoveCommand = new WhiteListRemoveCmd(this);
         WhiteListUpdateCmd whiteListUpdateCommand = new WhiteListUpdateCmd(this);
+        WhiteListScanCmd whiteListScanCmd = new WhiteListScanCmd(this);
         ServerStatusCmd serverStatusCmd = new ServerStatusCmd(this);
         GetPlayersCmd getPlayersCmd = new GetPlayersCmd(this);
         ReconnectCmd reconnectCmd = new ReconnectCmd(this);
@@ -66,13 +67,14 @@ public class ServerHelperCL {
         GlobalCommandExecCmd globalCommandExecCmd = new GlobalCommandExecCmd(this);
         PlayerCommandExecCmd playerCommandExecCmd = new PlayerCommandExecCmd(this);
         KickMeCmd kickMeCmd = new KickMeCmd(this);
-        RandomResearchDataCmd randomResearchDataCmd = new RandomResearchDataCmd(this);
+//        RandomResearchDataCmd randomResearchDataCmd = new RandomResearchDataCmd(this);
 
         groupPrivateCmds.put(whiteListAddCommand.commandName, whiteListAddCommand);
         groupPrivateCmds.put(whiteListForceAddCommand.commandName, whiteListForceAddCommand);
         groupPrivateCmds.put(whiteListGetCommand.commandName, whiteListGetCommand);
         groupPrivateCmds.put(whiteListRemoveCommand.commandName, whiteListRemoveCommand);
         groupPrivateCmds.put(whiteListUpdateCommand.commandName, whiteListUpdateCommand);
+        groupPrivateCmds.put(whiteListScanCmd.commandName, whiteListScanCmd);
         groupPrivateCmds.put(serverStatusCmd.commandName, serverStatusCmd);
         groupPrivateCmds.put(getPlayersCmd.commandName, getPlayersCmd);
         groupPrivateCmds.put(reconnectCmd.commandName, reconnectCmd);
@@ -80,7 +82,7 @@ public class ServerHelperCL {
         groupPrivateCmds.put(globalCommandExecCmd.commandName, globalCommandExecCmd);
         groupPrivateCmds.put(playerCommandExecCmd.commandName, playerCommandExecCmd);
         groupPrivateCmds.put(kickMeCmd.commandName, kickMeCmd);
-        groupPrivateCmds.put(randomResearchDataCmd.commandName, randomResearchDataCmd);
+//        groupPrivateCmds.put(randomResearchDataCmd.commandName, randomResearchDataCmd);
     }
 
     public static void loadConsoleCommand() {

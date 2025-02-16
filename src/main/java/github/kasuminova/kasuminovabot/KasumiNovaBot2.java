@@ -19,27 +19,28 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.util.*;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 public final class KasumiNovaBot2 extends JavaPlugin {
     public static final KasumiNovaBot2 INSTANCE = new KasumiNovaBot2();
 
-    public static final List<Long> SUPER_ADMIN = Arrays.asList(3044344887L, 2755271615L);
-    public static final String PROTOCOL_VERSION = "1.0.0";
-    public static final char COMMAND_PREFIX = '#';
+    public static final List<Long> SUPER_ADMIN      = Arrays.asList(3044344887L, 2755271615L);
+    public static final String     PROTOCOL_VERSION = "1.0.0";
+    public static final char       COMMAND_PREFIX   = '#';
 
     public final MiraiLogger logger = getLogger();
-
-    private final Map<String, GroupCommand> registeredCommands = new LinkedHashMap<>();
+    public final GroupMessageListener  genericEventListener = new GroupMessageListener();
+    private final Map<String, GroupCommand>              registeredCommands   = new LinkedHashMap<>();
     private final Map<String, Map<String, GroupCommand>> privateGroupCommands = new LinkedHashMap<>();
-
-    public final GroupMessageListener genericEventListener = new GroupMessageListener();
-    public final GroupCommandProcessor commandListener = new GroupCommandProcessor(registeredCommands, privateGroupCommands, genericEventListener);
+    public final GroupCommandProcessor commandListener      = new GroupCommandProcessor(registeredCommands, privateGroupCommands, genericEventListener);
 
     private TipManagerSyncThread tipManagerSyncThread = null;
 
     private KasumiNovaBot2() {
-        super(new JvmPluginDescriptionBuilder("github.kasuminova.kasuminovabot.KasumiNovaBot2", "2.4.0")
+        super(new JvmPluginDescriptionBuilder("github.kasuminova.kasuminovabot.KasumiNovaBot2", "2.4.3")
                 .name("KasumiNovaBot2")
                 .author("KasumiNova")
                 .build());
@@ -66,6 +67,7 @@ public final class KasumiNovaBot2 extends JavaPlugin {
         registerCommand(RemoveTipCmd.INSTANCE.commandName, RemoveTipCmd.INSTANCE);
         registerCommand(ApproveTipCmd.INSTANCE.commandName, ApproveTipCmd.INSTANCE);
         registerCommand(TipStatusCmd.INSTANCE.commandName, TipStatusCmd.INSTANCE);
+//        registerCommand(GroupDuplicateCalculate.INSTANCE.commandName, GroupDuplicateCalculate.INSTANCE);
 
         commandListener.load();
         genericEventListener.subscribe();
@@ -88,6 +90,7 @@ public final class KasumiNovaBot2 extends JavaPlugin {
         unregisterCommand(RemoveTipCmd.INSTANCE.commandName);
         unregisterCommand(ApproveTipCmd.INSTANCE.commandName);
         unregisterCommand(TipStatusCmd.INSTANCE.commandName);
+//        unregisterCommand(GroupDuplicateCalculate.INSTANCE.commandName);
 
         commandListener.unLoad();
         genericEventListener.unSubscribe();

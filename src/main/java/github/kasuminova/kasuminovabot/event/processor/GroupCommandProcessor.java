@@ -48,7 +48,7 @@ public class GroupCommandProcessor extends GroupMessageEventProcessor {
         Bot bot = event.getBot();
 
         if (!UserUtil.isSuperAdmin(sender.getId())) {
-            if (!(sender.getPermission().getLevel() >= command.permission) || UserUtil.isInBlackList(sender.getId(), bot.getId())) {
+            if (command.permission > sender.getPermission().getLevel() || UserUtil.isInBlackList(sender.getId(), bot.getId())) {
                 MiscUtil.sendMessageToGroup(new MessageChainBuilder()
                         .append(new QuoteReply(event.getMessage()))
                         .append("你没有权限，或是在机器人黑名单内。")

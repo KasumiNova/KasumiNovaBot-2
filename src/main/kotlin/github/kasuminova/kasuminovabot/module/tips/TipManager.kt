@@ -10,6 +10,9 @@ import java.util.concurrent.ThreadLocalRandom
 object TipManager {
 
     @JvmStatic
+    private val JSON = Json { prettyPrint = true }
+
+    @JvmStatic
     var tipStorage: TipStorage = TipStorage()
 
     @JvmStatic
@@ -93,6 +96,8 @@ object TipManager {
     }
 
     @JvmStatic
-    fun encodeToJsonString() = Json.encodeToString(tipStorage)
+    fun encodeToJsonString(): String {
+        return JSON.encodeToString(tipStorage)
+    }
 
 }

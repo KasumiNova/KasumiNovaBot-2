@@ -35,6 +35,7 @@ public class TipManagerSyncThread implements Runnable {
 
         while (!Thread.currentThread().isInterrupted()) {
             if (TipManager.getChanged()) {
+                TipManager.setChanged(false);
                 String encoded = TipManager.encodeToJsonString();
                 try {
                     FileUtil.writeStringToFile(file, encoded);
