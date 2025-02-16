@@ -20,12 +20,13 @@ import github.kasuminova.network.message.protocol.PreDisconnectMessage;
 import github.kasuminova.network.message.servercmd.CmdExecFailedMessage;
 import github.kasuminova.network.message.servercmd.CmdExecResultsMessage;
 import github.kasuminova.network.message.serverinfo.OnlinePlayerListMessage;
-import github.kasuminova.network.message.whitelist.FullWhiteListInfo;
-import github.kasuminova.network.message.whitelist.ResultCode;
-import github.kasuminova.network.message.whitelist.UpdateType;
-import github.kasuminova.network.message.whitelist.WhiteListUpdateResult;
+import github.kasuminova.network.message.whitelist.*;
+import net.mamoe.mirai.Bot;
+import net.mamoe.mirai.contact.Group;
+import net.mamoe.mirai.contact.NormalMember;
 import net.mamoe.mirai.message.data.MessageChainBuilder;
 
+import java.lang.reflect.Member;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -176,6 +177,27 @@ public class MainHandler extends AbstractHandler<MainHandler> implements UpdateT
         handler.cl.getChatMessageSyncTask().offerCmdExecResult(message.playerName, Collections.singletonList(message.cause));
     }
 
+    private static void checkUserInGroup(MainHandler handler, UserInGroupQueryMessage message) {
+        Bot bot = Bot.getInstance(handler.cl.getConfig().getBotId());
+        try {
+            Group group = bot.getGroup(handler.cl.getConfig().getGroupID());
+            if (group == null) {
+                handler.ctx.writeAndFlush(new UserInGroupResultMessage(message.id, false));
+                return;
+            }
+
+            NormalMember member = group.get(message.id);
+            if (member == null) {
+                handler.ctx.writeAndFlush(new UserInGroupResultMessage(message.id, false));
+                return;
+            }
+
+            handler.ctx.writeAndFlush(new UserInGroupResultMessage(message.id, true));
+        } catch (Throwable e) {
+            handler.ctx.writeAndFlush(new UserInGroupResultMessage(message.id, false));
+        }
+    }
+
     private static void preDisconnect(MainHandler handler, PreDisconnectMessage message) {
         KasumiNovaBot2.INSTANCE.logger.warning("即将从中心服务器断开连接，原因：" + message.reason);
 //        handler.cl.disconnect();
@@ -192,6 +214,7 @@ public class MainHandler extends AbstractHandler<MainHandler> implements UpdateT
         registerMessage(CmdExecResultsMessage.class, MainHandler::offerExecResult);
 
         registerMessage(PlayerCmdExecFailedMessage.class, MainHandler::offerExecResult);
+        registerMessage(UserInGroupQueryMessage.class, MainHandler::checkUserInGroup);
 
         registerMessage(PreDisconnectMessage.class, MainHandler::preDisconnect);
         registerMessage(HeartbeatResponse.class, (handler, message) -> cl.updateHeartbeatTime());
